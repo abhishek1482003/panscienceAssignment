@@ -22,7 +22,38 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/task-mana
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('Connected to MongoDB'))
+.then(async () => {
+  console.log('Connected to MongoDB');
+  
+  // Create demo users if they don't exist
+  const User = require('./models/User');
+  
+  try {
+    const adminExists = await User.findOne({ email: 'admin@example.com' });
+    if (!adminExists) {
+      const adminUser = new User({
+        email: 'admin@example.com',
+        password: 'admin123',
+        role: 'admin'
+      });
+      await adminUser.save();
+      console.log('Demo admin user created: admin@example.com / admin123');
+    }
+    
+    const userExists = await User.findOne({ email: 'user@example.com' });
+    if (!userExists) {
+      const regularUser = new User({
+        email: 'user@example.com',
+        password: 'user123',
+        role: 'user'
+      });
+      await regularUser.save();
+      console.log('Demo user created: user@example.com / user123');
+    }
+  } catch (error) {
+    console.error('Error creating demo users:', error);
+  }
+})
 .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
@@ -51,7 +82,7 @@ app.use('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
 
