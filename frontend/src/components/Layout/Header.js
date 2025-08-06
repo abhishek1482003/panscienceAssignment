@@ -20,7 +20,7 @@ const Header = () => {
           {/* Mobile menu button */}
           <button
             onClick={() => dispatch(toggleSidebar())}
-            className="lg:hidden header-button"
+            // className="lg:hidden header-button"
           >
             <Menu className="h-6 w-6" />
           </button>
